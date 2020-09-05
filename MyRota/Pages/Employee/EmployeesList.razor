@@ -1,0 +1,60 @@
+﻿@page "/employees_list"
+@using MyRota.Data
+@using MyRota.Models
+
+@using Microsoft.EntityFrameworkCore
+
+@inject ApplicationDbContext context
+
+<h1>EmployeesList</h1>
+<button class="btn btn-warning" @onclick="ReadUserData">Get Employee</button>
+
+<div class="card-columns">
+
+    @if (MyList == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        foreach (var employee in MyList)
+        {
+
+            <div class="card mb-3">
+                <div class="card-header">
+                    <strong>Name:</strong> @employee.FirstName @employee.LastName
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Gender:</strong> @employee.Gender</li>
+                    <li class="list-group-item"><strong>Age:</strong> 26</li>
+                    <li class="list-group-item"><strong>Email:</strong> @employee.Email</li>
+                    <li class="list-group-item"><strong>Role:</strong> @employee.Position</li>
+                    <li class="list-group-item"><strong>Branch:</strong> @employee.Branch</li>
+                </ul>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-danger">Edit</a>
+                    <a href="#" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+@code {
+    //private bool Loading;
+    private Employee Employee { get; set; }
+    public List<Employee> MyList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MyList = await context.Users.ToListAsync<Employee>();
+    }
+
+    private async Task ReadUserData()
+    {
+        Employee = await context.Users.FindAsync("08e97d00-3fe8-4ae2-8a4b-5d5d79afdddf");
+        MyList = await context.Users.ToListAsync<Employee>();
+        await context.DisposeAsync();
+    }
+}

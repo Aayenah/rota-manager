@@ -1,0 +1,17 @@
+﻿@page "/rota"
+@attribute [Authorize(Roles = "Worker")]
+
+<h3>Rota</h3>
+
+<AuthorizeView Roles="Worker">
+    <Authorized>
+        <h1>You are authorized</h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>You are not authorized!</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

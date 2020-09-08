@@ -31,7 +31,7 @@ namespace MyRota.Models
         public Branch Branch { get; set; }
 
         [Required]
-        [EnumDataType(typeof(Branch))]
+        [EnumDataType(typeof(Position))]
         public Position Position { get; set; }
 
         public List<Shift> Shifts { get; } = new List<Shift>();

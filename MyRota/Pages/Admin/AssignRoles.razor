@@ -1,0 +1,55 @@
+﻿@page "/AssignRoles"
+@using Microsoft.AspNetCore.Identity
+@using MyRota.Models
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+
+@inject UserManager<Employee> _userManager
+@inject RoleManager<IdentityRole> _roleManager
+
+<h3>Assign Roles</h3>
+
+<button class="btn btn-dark" @onclick="OnOpenDialogButtonClick">Show Dialog</button>
+
+<SfDialog Width="300px" @bind-Visible="@IsVisible" IsModal="true">
+    <DialogTemplates>
+        <Content>
+            <select @bind="MyRoles">
+                @if (MyRoles != null)
+                {
+                    foreach (var role in MyRoles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+                }
+            </select>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@OnDialogButtonClick" Content="Ok" IsPrimary="true">
+
+        </DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@code {
+    public bool IsVisible { get; set; } = false;
+    public IList<string> MyRoles { get; set; }
+
+
+    private void OnDialogButtonClick()
+    {
+        IsVisible = false;
+    }
+
+    private void OnOpenDialogButtonClick()
+    {
+        IsVisible = true;
+    }
+
+    private async Task GetRoles(Employee employee)
+    {
+        var roles = await _userManager.GetRolesAsync(employee);
+        MyRoles = roles;
+    }
+}

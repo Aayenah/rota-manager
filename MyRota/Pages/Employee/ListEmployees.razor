@@ -1,0 +1,244 @@
+﻿@page "/ListEmployees"
+@attribute [Authorize(Roles = "Admin")]
+@using MyRota.Data
+@using MyRota.Models
+@using Microsoft.EntityFrameworkCore
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.InPlaceEditor
+@using Microsoft.AspNetCore.Identity
+@using MyRota.SmartEnums
+
+@inject ApplicationDbContext context
+@inject UserManager<Employee> _userManager
+@inject RoleManager<IdentityRole> _roleManager
+
+<h1>List of employees</h1>
+
+
+
+<div>
+
+    @if (MyList == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        foreach (var employee in MyList)
+        {
+            <div class="card mb-3">
+                <div class="card-header">
+
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>First Name: </strong>
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.Text" @bind-Value="employee.FirstName" SubmitOnEnter="true"></SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Last Name: </strong>
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.Text" @bind-Value="employee.LastName" SubmitOnEnter="true"></SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Gender:</strong>
+                        <SfInPlaceEditor Mode="RenderMode.Popup" Type="InputType.DropDownList" @bind-Value="employee.Gender"
+                                         TValue="Gender" EmptyText="@employee.Gender.ToString()" Model="@GenderModel">
+                        </SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item"><strong>Age: </strong>26</li>
+                    <li class="list-group-item">
+                        <strong>Email: </strong>
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.Text" @bind-Value="employee.Email" SubmitOnEnter="true" Model="@employee"></SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Position: </strong>
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.DropDownList" @bind-Value="employee.Position"
+                                         TValue="MyRota.SmartEnums.Position" EmptyText="@employee.Position.ToString()" Model="@PositionModel">
+                        </SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Branch:</strong>
+                        <SfInPlaceEditor Mode="RenderMode.Popup" Type="InputType.DropDownList" @bind-Value="employee.Branch"
+                                         TValue="Branch" EmptyText="@employee.Branch.ToString()" Model="@BranchModel">
+                        </SfInPlaceEditor>
+                    </li>
+                    <li class="list-group-item"><strong>Role: </strong>
+                        @GetRolesForEmployee(employee)
+                    </li>
+                </ul>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-danger">Edit</a>
+                    <button class="btn btn-danger" @onclick="() => OpenRolesDialog(employee)">Assign a Role</button>
+                    <button class="btn btn-danger" @onclick="() => UpdateEmployee(employee)">Save Changes</button>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<SfDialog Width="500px" @bind-Visible="@IsVisible" IsModal="true">
+    <DialogTemplates>
+        <Content>
+            <hr />
+            @if (Employee != null)
+            {
+                <EditForm Model="@Employee">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group">
+                        <label class="col-form-label">First Name</label>
+                        <InputText @bind-Value="Employee.FirstName" @bind-Value:event="onsubmit" class="form-control"></InputText>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Last Name</label>
+                        <InputText @bind-Value="Employee.LastName" @bind-Value:event="onsubmit" class="form-control"></InputText>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Gender</label>
+                        <InputSelect TValue="Gender" @bind-Value="Employee.Gender" @bind-Value:event="onsubmit" class="form-control">
+                            @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                            {
+                                <option value="@gender">@gender</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Email</label>
+                        <InputText @bind-Value="Employee.Email" class="form-control"></InputText>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Position</label>
+                        <InputSelect TValue="MyRota.SmartEnums.Position" @bind-Value="Employee.Position" @bind-Value:event="onsubmit" class="form-control">
+                            @foreach (var position in Enum.GetValues(typeof(MyRota.SmartEnums.Position)))
+                            {
+                                <option value="@position">@position</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Branch</label>
+                        <InputSelect TValue="Branch" @bind-Value="Employee.Branch" @bind-Value:event="onsubmit" class="form-control">
+                            @foreach (var branch in Enum.GetValues(typeof(Branch)))
+                            {
+                                <option value="@branch">@branch</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+                </EditForm>
+            }
+
+            <select class="form-control" @bind="SelectedRole">
+                @if (RoleList != null)
+                {
+                    foreach (var role in RoleList)
+                    {
+                        <option>@role.Name</option>
+                    }
+                }
+            </select>
+            <h1>@SelectedRole</h1>
+
+            @if (EmployeeRoles != null)
+            {
+                foreach (var item in EmployeeRoles)
+                {
+                    <option>@item</option>
+                }
+            }
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@OnCancelButtonClick" Content="Cancel"></DialogButton>
+        <DialogButton OnClick="@OnOkButtonClick" Content="Confirm" IsPrimary="true"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+
+@code {
+
+    private Employee Employee { get; set; }
+    public List<Employee> MyList { get; set; }
+    public List<IdentityRole> RoleList { get; set; }
+    public List<string> EmployeeRoles { get; set; }
+    public bool IsVisible { get; set; } = false;
+    public string SelectedRole { get; set; }
+
+    public DropDownListModel<Gender> GenderModel = new DropDownListModel<Gender>
+    {
+        Placeholder = "Select Gender",
+        DataSource = Enum.GetNames(typeof(Gender)),
+    };
+
+    public DropDownListModel<MyRota.SmartEnums.Position> PositionModel = new DropDownListModel<MyRota.SmartEnums.Position>
+    {
+        Placeholder = "Select Position",
+        DataSource = Enum.GetNames(typeof(MyRota.SmartEnums.Position)),
+    };
+
+    public DropDownListModel<Branch> BranchModel = new DropDownListModel<Branch>
+    {
+        Placeholder = "Select Branch",
+        DataSource = Enum.GetNames(typeof(Branch)),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        MyList = await context.Users.ToListAsync<Employee>();
+        var roles = await _roleManager.Roles.ToListAsync();
+        RoleList = roles;
+    }
+
+
+    private async Task OpenRolesDialog(Employee employee)
+    {
+        var employeeRoles = await _userManager.GetRolesAsync(employee);
+        if (employeeRoles.Count > 0)
+        {
+            SelectedRole = employeeRoles.ElementAt(0);
+
+            EmployeeRoles = new List<string>(employeeRoles);
+        }
+        Employee = employee;
+        IsVisible = true;
+    }
+
+    private async Task OnOkButtonClick()
+    {
+        IsVisible = false;
+        await UpdateEmployee(Employee);
+        await UpdateRole(Employee, SelectedRole);
+    }
+
+    private void OnCancelButtonClick()
+    {
+        IsVisible = false;
+    }
+
+    private async Task UpdateRole(Employee emp, string role)
+    {
+        var updateRole = await _userManager.AddToRoleAsync(emp, role);
+    }
+
+    private async Task UpdateEmployee(Employee emp)
+    {
+        var update = await _userManager.UpdateAsync(emp);
+        await context.SaveChangesAsync();
+    }
+
+    private async Task<string> GetRolesForEmployee(Employee emp)
+    {
+        var roles = await _userManager.GetRolesAsync(emp);
+
+        string output = "";
+        if(roles != null)
+        {
+            foreach (var role in roles)
+            {
+                output += role + ", ";
+            }
+        }
+        return output;
+    }
+}

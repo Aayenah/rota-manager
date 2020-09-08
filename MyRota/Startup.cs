@@ -74,6 +74,7 @@ namespace MyRota
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzEwNjE5QDMxMzgyZTMyMmUzMFNDcjVZcHpHajZwQnE1TDFNa0Rwb1BVcmc3S0FRaVV0endWRVJFMGlkcVE9");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

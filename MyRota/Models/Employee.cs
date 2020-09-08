@@ -12,9 +12,11 @@ namespace MyRota.Models
     public class Employee : IdentityUser
     {
         [Required]
+        [StringLength(15, MinimumLength = 2)]
         public string FirstName { get; set; }
 
         [Required]
+        [StringLength(15, MinimumLength = 2)]
         public string LastName { get; set; }
 
         [Required]

@@ -41,11 +41,15 @@
                     </li>
                     <li class="list-group-item">
                         <strong>Gender:</strong>
-                        <SfInPlaceEditor Mode="RenderMode.Popup" Type="InputType.DropDownList" @bind-Value="employee.Gender"
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.DropDownList" @bind-Value="employee.Gender"
                                          TValue="Gender" EmptyText="@employee.Gender.ToString()" Model="@GenderModel">
                         </SfInPlaceEditor>
                     </li>
-                    <li class="list-group-item"><strong>Age: </strong>26</li>
+                    <li class="list-group-item"><strong>Date of Birth: </strong>
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.Date" @bind-Value="employee.DateOfBirth"
+                                         TValue="DateTime" Model="@DateModel">
+                        </SfInPlaceEditor>
+                    </li>
                     <li class="list-group-item">
                         <strong>Email: </strong>
                         <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.Text" @bind-Value="employee.Email" SubmitOnEnter="true" Model="@employee"></SfInPlaceEditor>
@@ -67,7 +71,6 @@
                     </li>
                 </ul>
                 <div class="card-footer">
-                    <a href="#" class="btn btn-danger">Edit</a>
                     <button class="btn btn-danger" @onclick="() => OpenRolesDialog(employee)">Assign a Role</button>
                     <button class="btn btn-danger" @onclick="() => UpdateEmployee(employee)">Save Changes</button>
                 </div>
@@ -79,56 +82,26 @@
 <SfDialog Width="500px" @bind-Visible="@IsVisible" IsModal="true">
     <DialogTemplates>
         <Content>
-            <hr />
             @if (Employee != null)
             {
-                <EditForm Model="@Employee">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="form-group">
-                        <label class="col-form-label">First Name</label>
-                        <InputText @bind-Value="Employee.FirstName" @bind-Value:event="onsubmit" class="form-control"></InputText>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Last Name</label>
-                        <InputText @bind-Value="Employee.LastName" @bind-Value:event="onsubmit" class="form-control"></InputText>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Gender</label>
-                        <InputSelect TValue="Gender" @bind-Value="Employee.Gender" @bind-Value:event="onsubmit" class="form-control">
-                            @foreach (var gender in Enum.GetValues(typeof(Gender)))
-                            {
-                                <option value="@gender">@gender</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Email</label>
-                        <InputText @bind-Value="Employee.Email" class="form-control"></InputText>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Position</label>
-                        <InputSelect TValue="MyRota.SmartEnums.Position" @bind-Value="Employee.Position" @bind-Value:event="onsubmit" class="form-control">
-                            @foreach (var position in Enum.GetValues(typeof(MyRota.SmartEnums.Position)))
-                            {
-                                <option value="@position">@position</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-form-label">Branch</label>
-                        <InputSelect TValue="Branch" @bind-Value="Employee.Branch" @bind-Value:event="onsubmit" class="form-control">
-                            @foreach (var branch in Enum.GetValues(typeof(Branch)))
-                            {
-                                <option value="@branch">@branch</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
 
-                </EditForm>
             }
 
+            @if (EmployeeRoles != null)
+            {
+                <span>Current roles: </span>
+                foreach (var item in EmployeeRoles)
+                {
+                    <span>[@item]</span>
+                }
+            }
+
+            <br />
+            <br />
+            <br />
+            <br />
+
+            <label class="col-form-label">Assign Role</label>
             <select class="form-control" @bind="SelectedRole">
                 @if (RoleList != null)
                 {
@@ -138,15 +111,6 @@
                     }
                 }
             </select>
-            <h1>@SelectedRole</h1>
-
-            @if (EmployeeRoles != null)
-            {
-                foreach (var item in EmployeeRoles)
-                {
-                    <option>@item</option>
-                }
-            }
         </Content>
     </DialogTemplates>
     <DialogButtons>
@@ -164,6 +128,7 @@
     public List<string> EmployeeRoles { get; set; }
     public bool IsVisible { get; set; } = false;
     public string SelectedRole { get; set; }
+    public string RolesString { get; set; }
 
     public DropDownListModel<Gender> GenderModel = new DropDownListModel<Gender>
     {
@@ -181,6 +146,12 @@
     {
         Placeholder = "Select Branch",
         DataSource = Enum.GetNames(typeof(Branch)),
+    };
+
+    public DatePickerModel DateModel = new DatePickerModel()
+    {
+        Placeholder = "Select Date",
+        Format = "dd/MM/yyyy",
     };
 
     protected override async Task OnInitializedAsync()
@@ -227,7 +198,7 @@
         await context.SaveChangesAsync();
     }
 
-    private async Task<string> GetRolesForEmployee(Employee emp)
+    private async Task GetRolesForEmployee(Employee emp)
     {
         var roles = await _userManager.GetRolesAsync(emp);
 
@@ -239,6 +210,5 @@
                 output += role + ", ";
             }
         }
-        return output;
     }
 }

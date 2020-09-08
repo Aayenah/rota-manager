@@ -79,13 +79,6 @@ using Syncfusion.Blazor;
 #line default
 #line hidden
 #nullable disable
-#nullable restore
-#line 12 "E:\Murad\Development\ASP.NET\MyRota\MyRota\_Imports.razor"
-using Syncfusion.Blazor.Calendars;
-
-#line default
-#line hidden
-#nullable disable
     [Microsoft.AspNetCore.Components.RouteAttribute("/")]
     public partial class Index : Microsoft.AspNetCore.Components.ComponentBase
     {

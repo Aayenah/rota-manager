@@ -42,7 +42,6 @@ else
         {
             await GetRolesForEmployee(Emp);
         }
-
     }
 
     private async Task GetRolesForEmployee(MyRota.Models.Employee emp)
@@ -52,6 +51,5 @@ else
         {
             Roles = new List<string>(employeeRoles);
         }
-        //Employee = employee;
     }
 }

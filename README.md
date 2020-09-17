@@ -1,5 +1,15 @@
-# About the App
+# Introduction
 This is web app made with ASP NET Core and Blazor Server. The main purpose of this app is to allow me to learn by practice. I've applied the things I learned and picked up a ton of new things on the way relating to security, databases, migrations and UI components.
+
+# Core Functionality
+- A user registers and is assigned a default role of "User" with minimal permissions.
+- The admin can:
+    - See a full list of users/employees and their details.
+    - Edit user details such as name, date of birth etc.
+    - Assign one or more roles to a user ["Admin", "Manager", "Worker", "User"].
+- The user can access and modify certain things depending on their role. For example, a "Manager" can assign shifts to employees but a "Worker" can only see the shifts assigned to them without modifying them.
+- A user (with right permissions) can view their shifts on the Rota page.
+- All changes are saved in the database.
 
 # Disclaimer
 I would like to mention a few things here:

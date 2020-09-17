@@ -1,0 +1,139 @@
+﻿@page "/AssignShift"
+@using MyRota.Data
+@using MyRota.Models
+@using MyRota.SmartEnums
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.InPlaceEditor
+@using Syncfusion.Blazor.DropDowns
+
+@inject ApplicationDbContext context
+@inject UserManager<Employee> _userManager
+
+<h3>AssignShift</h3>
+
+@if (EmpList == null)
+{
+    <p>No employees to display</p>
+}
+else
+{
+    foreach (var emp in EmpList)
+    {
+        <div class="card mb-3 border-info">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Name:</strong> @emp.FirstName @emp.LastName
+                </li>
+                <li class="list-group-item">
+                    <strong>Branch:</strong> @emp.Branch
+                </li>
+                <li class="list-group-item">
+                    <strong>Position:</strong> @emp.Position
+                </li>
+                <li class="list-group-item">
+                    <button class="btn btn-primary" @onclick="() => OpenDialog(emp)">Assign Shift</button>
+                </li>
+            </ul>
+        </div>
+    }
+}
+
+<SfDialog Width="500px" @bind-Visible="@IsVisible" IsModal="true">
+    <DialogTemplates>
+        <Content>
+            <br />
+            <br />
+
+            <label class="col-form-label">Assign Shift</label>
+            @if (Emp != null)
+            {
+                <form>
+                    <div class="form-group">
+                        <SfDateTimePicker TValue="DateTime" @bind-Value="Start" Placeholder='Select START date and time'></SfDateTimePicker>
+                    </div>
+                    <div class="form-group">
+                        <SfDateTimePicker TValue="DateTime" @bind-Value="End" Placeholder='Select END date and time'></SfDateTimePicker>
+                    </div>
+                    <div class="form-group">
+                        <SfInPlaceEditor Mode="RenderMode.Inline" Type="InputType.DropDownList" @bind-Value="Br"
+                                         TValue="Branch" EmptyText="@Emp.Branch.ToString()" Model="@BranchModel">
+                        </SfInPlaceEditor>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" @bind="Comment" />
+                    </div>
+                    <div class="form-group">
+                        <button class="form-control" @onclick="() => AddShiftToEmployee(Emp)">Save</button>
+                    </div>
+                </form>
+            }
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@OnCancelButtonClick" Content="Cancel"></DialogButton>
+        <DialogButton OnClick="@OnOkButtonClick" Content="Confirm" IsPrimary="true"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@code {
+    public List<Employee> EmpList { get; set; }
+    public bool IsVisible { get; set; } = false;
+    public Employee Emp { get; set; }
+
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
+    public Branch Br { get; set; }
+    public string Comment { get; set; }
+
+    public DropDownListModel<Branch> BranchModel = new DropDownListModel<Branch>
+    {
+        Placeholder = "Select Branch",
+        DataSource = Enum.GetNames(typeof(Branch)),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        EmpList = await context.Users.ToListAsync<Employee>();
+    }
+
+    private async Task OpenDialog(Employee emp)
+    {
+        Employee user = await _userManager.FindByIdAsync(emp.Id);
+        Emp = user;
+        IsVisible = true;
+    }
+
+    private async Task AddShiftToEmployee(Employee emp)
+    {
+        if(Start == null || End == null)
+        {
+            return;
+        }
+
+        emp.AddShift(Start, End, Br, Comment);
+        await UpdateEmployee(emp);
+    }
+
+    private async Task UpdateEmployee(Employee emp)
+    {
+        var update = await _userManager.UpdateAsync(emp);
+        @*context.Users.Attach(emp);
+        context.Entry(emp).Property()*@
+        await context.SaveChangesAsync();
+    }
+
+    private async Task OnOkButtonClick()
+    {
+        IsVisible = false;
+        await AddShiftToEmployee(Emp);
+        await UpdateEmployee(Emp);
+    }
+
+    private void OnCancelButtonClick()
+    {
+        IsVisible = false;
+    }
+}

@@ -25,5 +25,10 @@ namespace MyRota.Models
         public string Comment { get; set; }
 
         public TimeSpan Duration => EndTime - StartTime;
+
+        public override string ToString()
+        {
+            return $"[{Id}] FROM {StartTime} TO {EndTime} AT {Branch}";
+        }
     }
 }

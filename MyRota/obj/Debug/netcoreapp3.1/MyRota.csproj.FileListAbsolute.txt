@@ -203,7 +203,9 @@ E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Shared\
 E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Shared\RegisterComponent.razor.g.cs
 E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Shared\SurveyPrompt.razor.g.cs
 E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\_Imports.razor.g.cs
-E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Employee\ListEmployees.razor.g.cs
-E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Pages\Employee\ListEmployees.razor.g.cs
 E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Admin\AssignRoles.razor.g.cs
 E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Pages\Admin\AssignRoles.razor.g.cs
+E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Admin\ListEmployees.razor.g.cs
+E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Pages\Admin\ListEmployees.razor.g.cs
+E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\RazorDeclaration\Pages\Manager\AssignShift.razor.g.cs
+E:\Murad\Development\ASP.NET\MyRota\MyRota\obj\Debug\netcoreapp3.1\Razor\Pages\Manager\AssignShift.razor.g.cs

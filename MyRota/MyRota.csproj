@@ -22,6 +22,8 @@
     <Compile Remove="Data\Migrations\20200904195554_CreateUserRole.Designer.cs" />
     <Compile Remove="Data\Migrations\20200904201213_CreateUserRole.cs" />
     <Compile Remove="Data\Migrations\20200904201213_CreateUserRole.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200917153838_AddEmployeePropToShift.cs" />
+    <Compile Remove="Data\Migrations\20200917153838_AddEmployeePropToShift.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

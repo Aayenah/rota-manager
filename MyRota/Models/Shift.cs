@@ -1,4 +1,5 @@
 ﻿using MyRota.SmartEnums;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,5 +31,9 @@ namespace MyRota.Models
         {
             return $"[{Id}] FROM {StartTime} TO {EndTime} AT {Branch}";
         }
+
+        [Required]
+        [JsonIgnore]
+        public Employee Employee { get; set; }
     }
 }

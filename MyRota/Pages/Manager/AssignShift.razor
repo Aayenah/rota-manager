@@ -1,4 +1,5 @@
 ﻿@page "/AssignShift"
+@attribute [Authorize(Roles = "Admin, Manager")]
 @using MyRota.Data
 @using MyRota.Models
 @using MyRota.SmartEnums
@@ -7,12 +8,11 @@
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.InPlaceEditor
-@using Syncfusion.Blazor.DropDowns
 
 @inject ApplicationDbContext context
 @inject UserManager<Employee> _userManager
 
-<h3>AssignShift</h3>
+<h3>Assign Shifts</h3>
 
 @if (EmpList == null)
 {
@@ -108,20 +108,18 @@ else
 
     private async Task AddShiftToEmployee(Employee emp)
     {
-        if(Start == null || End == null)
+        if (Start == null || End == null)
         {
             return;
         }
 
-        emp.AddShift(Start, End, Br, Comment);
+        emp.AddShift(Start, End, Emp, Br, Comment);
         await UpdateEmployee(emp);
     }
 
     private async Task UpdateEmployee(Employee emp)
     {
         var update = await _userManager.UpdateAsync(emp);
-        @*context.Users.Attach(emp);
-        context.Entry(emp).Property()*@
         await context.SaveChangesAsync();
     }
 
@@ -129,7 +127,6 @@ else
     {
         IsVisible = false;
         await AddShiftToEmployee(Emp);
-        await UpdateEmployee(Emp);
     }
 
     private void OnCancelButtonClick()

@@ -1,7 +1,57 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Identity
+@using MyRota.Models
+@using MyRota.Data
 
-<h1>Hello, world!</h1>
+@inject SignInManager<MyRota.Models.Employee> _signInManager
+@inject UserManager<MyRota.Models.Employee> _userManager
+@inject RoleManager<IdentityRole> _rolesManager
+@inject AuthenticationStateProvider _authState
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@if (Emp == null)
+{
+    <h1>Hello! You are not logged in.</h1>
+
+}
+else
+{
+    <h1>Hello, @Emp.FirstName</h1>
+    <h4>Welcome to MyRota app!</h4>
+    <br />
+    <span><strong>Your roles: </strong></span>
+    foreach (var role in Roles)
+    {
+        <span>[ @role ] </span>
+    }
+}
+
+
+
+@code{
+    public MyRota.Models.Employee Emp { get; set; }
+    public List<string> Roles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await _authState.GetAuthenticationStateAsync();
+        var user = state.User;
+        Emp = await _userManager.GetUserAsync(user);
+
+        if(Emp != null)
+        {
+            await GetRolesForEmployee(Emp);
+        }
+
+    }
+
+    private async Task GetRolesForEmployee(MyRota.Models.Employee emp)
+    {
+        var employeeRoles = await _userManager.GetRolesAsync(emp);
+        if (employeeRoles.Count > 0)
+        {
+            Roles = new List<string>(employeeRoles);
+        }
+        //Employee = employee;
+    }
+}

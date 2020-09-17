@@ -1,12 +1,8 @@
 ﻿@page "/rota"
-@attribute [Authorize(Roles = "Worker")]
-@using Syncfusion.Blazor.Schedule
+@attribute [Authorize(Roles = "Admin, Manager, Worker")]
 @using MyRota.Models
 @using MyRota.Data
-@using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Http
 
 
 @inject ApplicationDbContext context
@@ -16,23 +12,40 @@
 
 <h3>Rota</h3>
 
-<AuthorizeView Roles="Worker">
+<AuthorizeView Roles="Manager, Worker">
     <Authorized>
-        @*<SfSchedule TValue="Shift" Height="650px" SelectedDate="@DateTime.Today">
-            <ScheduleEventSettings DataSource="@Employee.Shifts"></ScheduleEventSettings>
-        </SfSchedule>*@
-
-        @if (Employee == null)
+        @if (Emp == null)
         {
             <p>No user found.</p>
         }
         else
         {
-            if (Employee.Shifts.Count > 0)
+            if (Emp.Shifts.Count > 0)
             {
                 foreach (var s in ShiftsList)
                 {
-                    <h2>@s</h2>
+                    <div class="card mb-3 border-dark">
+                        <div class="card-header">
+                            <strong class="text-uppercase">Shift [Id: @s.Id]</strong>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <strong>Start:</strong> @s.StartTime
+                            </div>
+                            <div class="list-group-item">
+                                <strong>End:</strong> @s.EndTime
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Duration:</strong> @s.Duration.TotalHours hours
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Location:</strong> @s.Branch
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Comments:</strong> @s.Comment
+                            </div>
+                        </div>
+                    </div>
                 }
             }
             else
@@ -49,15 +62,20 @@
 </AuthorizeView>
 
 @code {
-    public Employee Employee { get; set; }
+    public Employee Emp { get; set; }
     public List<Shift> ShiftsList { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var state = await _authState.GetAuthenticationStateAsync();
         var user = state.User;
-        Employee = await _userManager.GetUserAsync(user);
-        ShiftsList = Employee.Shifts;
+        Emp = await _userManager.GetUserAsync(user);
+
+        var shifts =  from s in context.Set<Shift>()
+                       where s.Employee.Id == Emp.Id
+                       select s;
+
+        ShiftsList = shifts.ToList();
     }
 
 

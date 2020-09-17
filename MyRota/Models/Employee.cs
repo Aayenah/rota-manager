@@ -36,7 +36,7 @@ namespace MyRota.Models
         [EnumDataType(typeof(Position))]
         public Position Position { get; set; }
 
-
+        
         public List<Shift> Shifts { get; } = new List<Shift>();
 
         public int MaxShiftLengthInHours { get; set; } = 8;
@@ -44,7 +44,7 @@ namespace MyRota.Models
         public double TotalWeeklyHours { get; set; }
 
 
-        public void AddShift(DateTime start, DateTime end, Branch branch, string comment = "No comments.")
+        public void AddShift(DateTime start, DateTime end, Employee emp, Branch branch, string comment = "No comments.")
         {
             if (start > end) // shift starts after it ends?
             {
@@ -56,7 +56,7 @@ namespace MyRota.Models
                 Console.WriteLine($"Not allowed to work more than {MaxShiftLengthInHours} hours. Shift length: {end - start}");
                 return;
             }
-            Shifts.Add(new Shift { StartTime = start, EndTime = end, Branch = branch, Comment = comment });
+            Shifts.Add(new Shift { StartTime = start, EndTime = end, Employee = emp, Branch = branch, Comment = comment });
         }
 
         public override string ToString()

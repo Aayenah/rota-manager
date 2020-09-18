@@ -11,6 +11,10 @@ This is web app made with ASP NET Core and Blazor Server. The main purpose of th
 - A user (with right permissions) can view their shifts on the Rota page.
 - All changes are saved in the database.
 
+# Screenshots
+Here is an album containing screenshots of the app:
+https://imgur.com/a/TIuzemK
+
 # Disclaimer
 I would like to mention a few things here:
   1. This is a side project meant for practice. It's not a real-world app.
